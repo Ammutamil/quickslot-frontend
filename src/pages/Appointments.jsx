@@ -64,7 +64,7 @@ const renderSection = (title, items) =>
         style={{
           position: "sticky",
           top: 0,
-          background: "#fff",
+         background: "inherit",
           padding: "10px 0",
           display: "flex",
           justifyContent: "space-between",
@@ -125,8 +125,25 @@ const renderSection = (title, items) =>
     </div>
   );
   return (
-    <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
-      <h1>📅 Appointment Manager</h1>
+   <div
+  style={{
+    maxWidth: "800px",
+    margin: "auto",
+    padding: "16px",
+    width: "100%",
+    boxSizing: "border-box",
+  }}
+>
+      <h1
+  style={{
+    fontSize: "clamp(24px, 5vw, 36px)",
+    marginBottom: "20px",
+    wordBreak: "break-word",
+    lineHeight: "1.2",
+  }}
+>
+  📅 Appointment Manager
+</h1>
 
       {/* FORM */}
       <form
