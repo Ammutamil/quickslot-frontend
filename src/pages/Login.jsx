@@ -46,8 +46,15 @@ return (
         boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
       }}
     >
-      <h2 style={{ marginBottom: "20px" }}>⚡ QuickSlot Login</h2>
-
+<h2
+  style={{
+    marginBottom: "20px",
+    color: "#111",
+    textAlign: "center",
+  }}
+>
+  ⚡ QuickSlot Login
+</h2>
       <form
         onSubmit={handleLogin}
         style={{
