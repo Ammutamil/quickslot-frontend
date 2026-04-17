@@ -1,5 +1,10 @@
 // src/pages/Appointments.jsx
 import { useEffect, useState } from "react";
+import {
+  formatDate,
+  formatTime,
+  groupAppointments
+} from "../utils";
 import api from "../services/api";
 
 export default function Appointments() {
@@ -51,6 +56,74 @@ if (!user) {
 
   window.open(url, "_blank");
 };
+const grouped = groupAppointments(appointments);
+const renderSection = (title, items) =>
+  items.length > 0 && (
+    <div style={{ marginBottom: "24px" }}>
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          background: "#fff",
+          padding: "10px 0",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          zIndex: 1,
+        }}
+      >
+        <h3>{title}</h3>
+        <span
+          style={{
+            background: "#eef4ff",
+            color: "#2563eb",
+            padding: "4px 10px",
+            borderRadius: "20px",
+            fontSize: "14px",
+          }}
+        >
+          {items.length}
+        </span>
+      </div>
+
+      <div style={{ display: "grid", gap: "10px" }}>
+        {items.map((a) => (
+          <div
+            key={a._id}
+            style={{
+              border: "1px solid #ddd",
+              padding: "12px",
+              borderRadius: "10px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <strong>{a.name}</strong> ({a.phone}) <br />
+              📅 {formatDate(a.date)} ⏰ {formatTime(a.time)}
+            </div>
+
+            <button
+              onClick={() =>
+                sendReminder(a.phone, a.name, a.date, a.time)
+              }
+              style={{
+                background: "#25D366",
+                color: "white",
+                border: "none",
+                padding: "8px 12px",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              💬 WhatsApp
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
   return (
     <div style={{ maxWidth: "800px", margin: "auto", padding: "20px" }}>
       <h1>📅 Appointment Manager</h1>
@@ -74,17 +147,31 @@ if (!user) {
           value={form.phone}
           onChange={(e) => setForm({ ...form, phone: e.target.value })}
         />
-        <input
-          type="date"
-          value={form.date}
-          onChange={(e) => setForm({ ...form, date: e.target.value })}
-        />
-        <input
-          type="time"
-          value={form.time}
-          onChange={(e) => setForm({ ...form, time: e.target.value })}
-        />
+      <div className="flex flex-col gap-3">
+  <div>
+    <label className="block mb-1 text-sm font-medium text-gray-600">
+      Select Date
+    </label>
+    <input
+      type="date"
+      value={form.date}
+      onChange={(e) => setForm({ ...form, date: e.target.value })}
+      className="w-full rounded-lg border border-gray-300 p-3 text-black bg-white"
+    />
+  </div>
 
+  <div>
+    <label className="block mb-1 text-sm font-medium text-gray-600">
+      Select Time
+    </label>
+    <input
+      type="time"
+      value={form.time}
+      onChange={(e) => setForm({ ...form, time: e.target.value })}
+      className="w-full rounded-lg border border-gray-300 p-3 text-black bg-white"
+    />
+  </div>
+</div>
         <button style={{ padding: "10px", cursor: "pointer" }}>
           ➕ Add Appointment
         </button>
@@ -92,60 +179,16 @@ if (!user) {
 
       {/* LIST */}
       <h2>Appointments List</h2>
-      
       {appointments.length === 0 ? (
-        <p>No appointments yet</p>
-      ) : (
-        <div style={{ display: "grid", gap: "10px" }}>
-          {/* {appointments.map((a) => (
-            <div
-              key={a._id}
-              style={{
-                border: "1px solid #ddd",
-                padding: "10px",
-                borderRadius: "8px",
-              }}
-            >
-              <strong>{a.name}</strong> ({a.phone}) <br />
-              📅 {a.date} ⏰ {a.time}
-            </div>
-          ))} */}
-          {appointments.map((a) => (
-  <div
-    key={a._id}
-    style={{
-      border: "1px solid #ddd",
-      padding: "10px",
-      borderRadius: "8px",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-    }}
-  >
-    <div>
-      <strong>{a.name}</strong> ({a.phone}) <br />
-      📅 {a.date} ⏰ {a.time}
-    </div>
-
-    <button
-      onClick={() =>
-        sendReminder(a.phone, a.name, a.date, a.time)
-      }
-      style={{
-        background: "#25D366",
-        color: "white",
-        border: "none",
-        padding: "8px 12px",
-        borderRadius: "5px",
-        cursor: "pointer",
-      }}
-    >
-      💬 WhatsApp
-    </button>
-  </div>
-))}
-        </div>
-      )}
+  <p>No appointments yet</p>
+) : (
+  <>
+    {renderSection("Today", grouped.today)}
+    {renderSection("Tomorrow", grouped.tomorrow)}
+    {renderSection("Upcoming", grouped.upcoming)}
+  </>
+)}
+     
     </div>
   );
 }
